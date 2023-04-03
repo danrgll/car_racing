@@ -1,6 +1,7 @@
-gym[box2d] == 0.18.3
+gym[box2d]==0.26.1
 torch==1.11.0
 numpy==1.21.6
 tensorboard==1.15.0
 matplotlib==3.5.1
 protobuf==3.20
+pyglet==2.0.5
