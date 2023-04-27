@@ -1,26 +1,46 @@
 import torch
-from agent.networks import CNN
+from torch import nn
+from imitation_learning.agent.networks import CNN
+from evaluate import accuracy
+
 
 class BCAgent:
     
-    def __init__(self):
+    def __init__(self, device, lr):
         # TODO: Define network, loss function, optimizer
-        # self.net = CNN(...)
-        pass
+        self.net = CNN()
+        self.criterion = nn.CrossEntropyLoss().to(device)
+        self.optimizer = torch.optim.SGD(self.net.parameters(), lr=lr)
 
-    def update(self, X_batch, y_batch):
-        # TODO: transform input to tensors
-        # TODO: forward + backward + optimize
+    def update(self, X_batch, y_batch, device, batch_size):
+        self.optimizer.zero_grad()
+        # transform input to tensors
+        X_tensor = torch.from_numpy(X_batch)
+        X_tensor = X_tensor.to(device)
+        y_tensor = torch.from_numpy(y_batch)
+        y_tensor = y_tensor.to(device)
+        # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
+        X_tensor = X_tensor.view((batch_size, 1, 96, 96))
+        # forward + backward + optimize
+        prediction = self.net(X_tensor)
+        loss = self.criterion(prediction, y_tensor)
+        acc = accuracy(prediction, y_tensor)
+        loss.backward()
+        self.optimizer.step()
+        return loss, acc
 
-        return loss
-
-    def predict(self, X):
-        # TODO: forward pass
-        return outputs
+    def predict(self, X, get_loss=False):
+        """predict Tensor Xr"""
+        pred = self.net.forward(X)
+        if get_loss is True:
+            _, outputs = torch.max(pred.data, 1)
+            return outputs, pred
+        else:
+            _, outputs = torch.max(pred.data, 1)
+            return outputs
 
     def load(self, file_name):
         self.net.load_state_dict(torch.load(file_name))
-
 
     def save(self, file_name):
         torch.save(self.net.state_dict(), file_name)

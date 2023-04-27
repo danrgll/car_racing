@@ -1,6 +1,6 @@
 import numpy as np
 
-LEFT =1
+LEFT = 1
 RIGHT = 2
 STRAIGHT = 0
 ACCELERATE =3
@@ -20,10 +20,14 @@ def action_to_id(a):
     this method discretizes the actions.
     Important: this method only works if you recorded data pressing only one key at a time!
     """
-    if all(a == [-1.0, 0.0, 0.0]): return LEFT               # LEFT: 1
-    elif all(a == [1.0, 0.0, 0.0]): return RIGHT             # RIGHT: 2
-    elif all(a == [0.0, 1.0, 0.0]): return ACCELERATE        # ACCELERATE: 3
-    elif all(a == [0.0, 0.0, 0.2]): return BRAKE             # BRAKE: 4
+    if all((a == [-1.0, 0.0, 0.0]).flatten()):
+        return LEFT               # LEFT: 1
+    elif all((a == [1.0, 0.0, 0.0]).flatten()):
+        return RIGHT             # RIGHT: 2
+    elif all((a == [0.0, 1.0, 0.0]).flatten()):
+        return ACCELERATE        # ACCELERATE: 3
+    elif all((a == [0.0, 0.0, 0.2]).flatten()):
+        return BRAKE             # BRAKE: 4
     else:       
         return STRAIGHT                                      # STRAIGHT = 0
 

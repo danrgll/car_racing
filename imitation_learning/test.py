@@ -1,14 +1,17 @@
 from __future__ import print_function
 
 import sys
-sys.path.append("../") 
+
+import utils
+
+sys.path.append("../")
 
 from datetime import datetime
 import numpy as np
 import gym
 import os
 import json
-
+import torch
 from agent.bc_agent import BCAgent
 from utils import *
 
@@ -25,8 +28,16 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
 
     while True:
         
-        # TODO: preprocess the state in the same way than in your preprocessing in train_agent.py
-        #    state = ...
+        # preprocess the state in the same way than in your preprocessing in train_agent.py
+        state = utils.rgb2gray(state)
+        # predict next action
+        state = torch.from_numpy(state)
+        state = state.to(device)
+        state = state.view((1, 1, 96, 96))
+        action = agent.predict(state).detach().numpy()
+        print(action)
+        # transform action back to continuous
+        action = utils.id_to_action(action)
 
         
         # TODO: get the action from your agent! You need to transform the discretized actions to continuous
@@ -35,9 +46,8 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
         #       - the action array fed into env.step() needs to have a shape like np.array([0.0, 0.0, 0.0])
         #       - just in case your agent misses the first turn because it is too fast: you are allowed to clip the acceleration in test_agent.py
         #       - you can use the softmax output to calculate the amount of lateral acceleration
-        # a = ...
 
-        next_state, r, done, info = env.step(a)   
+        next_state, r, done, info = env.step(action)
         episode_reward += r       
         state = next_state
         step += 1
@@ -59,8 +69,9 @@ if __name__ == "__main__":
     n_test_episodes = 15                  # number of episodes to test
 
     # TODO: load agent
-    # agent = BCAgent(...)
-    # agent.load("models/bc_agent.pt")
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    agent = BCAgent(device, lr=10e-4)
+    agent.load("models/agent.pt")
 
     env = gym.make('CarRacing-v0').unwrapped
 
