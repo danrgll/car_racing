@@ -182,7 +182,7 @@ def train_model(X_train, y_train, X_valid, y_valid, batch_size, epochs, lr, hist
 
     # TODO: specify your agent with the neural network in agents/bc_agent.py 
     agent = BCAgent(history_length=history_length, device=device, lr=lr)
-    summary(agent.net, (history_length, 96, 96), device='cuda' if torch.cuda.is_available() else 'cpu')
+    summary(agent, (history_length, 96, 96), device='cuda' if torch.cuda.is_available() else 'cpu')
     
     tensorboard_eval = Evaluation(tensorboard_dir, "agent", ["train_loss", "train_acc", "val_loss", "val_acc"])
 
