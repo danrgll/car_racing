@@ -22,11 +22,11 @@ class BCAgent:
         X_tensor = X_tensor.to(device)
         y_tensor = torch.from_numpy(y_batch)
         y_tensor = y_tensor.to(device)
-        print("input")
+        print("test")
         # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
         X_tensor = X_tensor.view((batch_size, history_length, 96, 96))
         # forward + backward + optimize
-        prediction = self.net(X_tensor)
+        prediction = self.net(X_tensor).to(device)
         loss = self.criterion(prediction, y_tensor)
         acc = accuracy(prediction, y_tensor)
         loss.backward()
