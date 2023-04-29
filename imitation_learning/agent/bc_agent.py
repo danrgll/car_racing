@@ -8,7 +8,7 @@ class BCAgent:
     
     def __init__(self, history_length, device, lr):
         # TODO: Define network, loss function, optimizer
-        self.net = CNN(history_length=history_length).to(device)
+        self.net = CNN(history_length=history_length)
         self.criterion = nn.CrossEntropyLoss().to(device)
         # self.optimizer = torch.optim.SGD(self.net.parameters(), lr=lr)
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=lr)
