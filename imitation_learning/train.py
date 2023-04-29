@@ -14,6 +14,7 @@ from imitation_learning.agent.bc_agent import BCAgent
 from tensorboard_evaluation import Evaluation
 from torch.utils.data import DataLoader
 from evaluate import AverageMeter, accuracy, eval_fn
+from torchsummary import summary
 
 
 def read_data(datasets_dir="data", frac = 0.1):
@@ -181,7 +182,7 @@ def train_model(X_train, y_train, X_valid, y_valid, batch_size, epochs, lr, hist
 
     # TODO: specify your agent with the neural network in agents/bc_agent.py 
     agent = BCAgent(history_length=history_length, device=device, lr=lr)
-    agent.net.summary((history_length, 96, 96))
+    summary(agent.net, (history_length, 96, 96), device='cuda' if torch.cuda.is_available() else 'cpu')
     
     tensorboard_eval = Evaluation(tensorboard_dir, "agent", ["train_loss", "train_acc", "val_loss", "val_acc"])
 
@@ -254,8 +255,8 @@ def train_model(X_train, y_train, X_valid, y_valid, batch_size, epochs, lr, hist
 if __name__ == "__main__":
     # concatenate datasets
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    data_file = os.path.join(root_dir, "data" + "/big_data.pkl.gzip")
-    data_file2 = os.path.join(root_dir, "data" + "/data6.pkl.gzip")
+    data_file = os.path.join(root_dir, "data" + "/data1.pkl.gzip")
+    data_file2 = os.path.join(root_dir, "data" + "/data2.pkl.gzip")
     # concatenate(data_file, data_file2)
     print("concatenated datasets")
     history_length = 3
