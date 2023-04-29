@@ -8,7 +8,8 @@ class BCAgent:
     
     def __init__(self, history_length, device, lr):
         # TODO: Define network, loss function, optimizer
-        self.net = CNN(history_length=history_length).to(device)
+        self.net = CNN(history_length=history_length)
+        self.net.model.to(device)
         self.criterion = nn.CrossEntropyLoss().to(device)
         # self.optimizer = torch.optim.SGD(self.net.parameters(), lr=lr)
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=lr)
@@ -20,6 +21,9 @@ class BCAgent:
         X_tensor = X_tensor.to(device)
         y_tensor = torch.from_numpy(y_batch)
         y_tensor = y_tensor.to(device)
+        print("input")
+        print(X_tensor.device)
+        print(self.net.model.device)
         # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
         X_tensor = X_tensor.view((batch_size, history_length, 96, 96))
         # forward + backward + optimize
