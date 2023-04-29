@@ -14,6 +14,7 @@ class BCAgent:
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=lr)
 
     def update(self, X_batch, y_batch, device, batch_size, history_length):
+        self.net.to(device)
         self.optimizer.zero_grad()
         # transform input to tensors
         X_tensor = torch.from_numpy(X_batch)
