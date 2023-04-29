@@ -22,7 +22,7 @@ class BCAgent:
         y_tensor = torch.from_numpy(y_batch)
         y_tensor = y_tensor.to(device)
         print("input")
-        print(X_tensor.device)
+        # print(X_tensor.device)
         # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
         X_tensor = X_tensor.view((batch_size, history_length, 96, 96))
         # forward + backward + optimize
