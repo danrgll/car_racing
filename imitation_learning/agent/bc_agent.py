@@ -22,7 +22,6 @@ class BCAgent:
         y_tensor = y_tensor.to(device)
         print("input")
         print(X_tensor.device)
-        print(self.net.model.device)
         # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
         X_tensor = X_tensor.view((batch_size, history_length, 96, 96))
         # forward + backward + optimize
