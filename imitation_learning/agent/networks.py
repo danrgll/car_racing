@@ -8,7 +8,6 @@ Imitation learning network
 """
 
 class CNN(nn.Module):
-
     def __init__(self, history_length=1, n_classes=5):
         super(CNN, self).__init__()
         self.model = nn.Sequential(
@@ -46,9 +45,6 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.model.forward(x)
         return x
-
-    def summary(self, input_size):
-        summary(self.model, input_size, device='cuda' if torch.cuda.is_available() else 'cpu')
 
 
 """
