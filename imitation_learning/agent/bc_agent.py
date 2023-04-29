@@ -6,13 +6,14 @@ from evaluate import accuracy
 
 class BCAgent:
     
-    def __init__(self, device, lr):
+    def __init__(self, history_length, device, lr):
         # TODO: Define network, loss function, optimizer
-        self.net = CNN()
+        self.net = CNN(history_length=history_length)
         self.criterion = nn.CrossEntropyLoss().to(device)
-        self.optimizer = torch.optim.SGD(self.net.parameters(), lr=lr)
+        # self.optimizer = torch.optim.SGD(self.net.parameters(), lr=lr)
+        self.optimizer = torch.optim.Adam(self.net.parameters(), lr=lr)
 
-    def update(self, X_batch, y_batch, device, batch_size):
+    def update(self, X_batch, y_batch, device, batch_size, history_length):
         self.optimizer.zero_grad()
         # transform input to tensors
         X_tensor = torch.from_numpy(X_batch)
@@ -20,7 +21,7 @@ class BCAgent:
         y_tensor = torch.from_numpy(y_batch)
         y_tensor = y_tensor.to(device)
         # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
-        X_tensor = X_tensor.view((batch_size, 1, 96, 96))
+        X_tensor = X_tensor.view((batch_size, history_length, 96, 96))
         # forward + backward + optimize
         prediction = self.net(X_tensor)
         loss = self.criterion(prediction, y_tensor)

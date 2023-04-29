@@ -30,7 +30,7 @@ def store_data(data, datasets_dir="./data"):
     # save data
     if not os.path.exists(datasets_dir):
         os.mkdir(datasets_dir)
-    data_file = os.path.join(datasets_dir, 'data.pkl.gzip')
+    data_file = os.path.join(datasets_dir, 'data5.pkl.gzip')
     f = gzip.open(data_file,'wb')
     pickle.dump(data, f)
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
                 print("\naction " + str(["{:+0.2f}".format(x) for x in a]))
                 print("\nstep {}".format(steps))
 
-            if args.collect_data and steps % 1000 == 0:
+            if args.collect_data and steps % 5000 == 0:
                 print('... saving data')
                 store_data(samples, "./data")
                 save_results(episode_rewards, "./results")

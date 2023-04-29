@@ -25,19 +25,34 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
     
     # fix bug of curropted states without rendering in racingcar gym environment
     env.viewer.window.dispatch_events() 
-
+    state_history = []
     while True:
         
         # preprocess the state in the same way than in your preprocessing in train_agent.py
         state = utils.rgb2gray(state)
         # predict next action
-        state = torch.from_numpy(state)
-        state = state.to(device)
-        state = state.view((1, 1, 96, 96))
-        action = agent.predict(state).detach().numpy()
-        print(action)
-        # transform action back to continuous
-        action = utils.id_to_action(action)
+        if len(state_history) == history_length:
+            # print("new action")
+            state_history.pop(0)
+            state_history.append(state)
+            state = np.array(state_history).astype("float32")
+            # print(state.shape)
+            # state = state.reshape((1, history_length, 96, 96))
+            # X_train = np.array(X_seq_train).astype("float32")
+            # print("test")
+            # print(state.shape)
+            state = torch.from_numpy(state)
+            state = state.to(device)
+            state = state.view((1, history_length, 96, 96))
+            action = agent.predict(state).detach().numpy()
+            # print(action)
+            # transform action back to continuous
+            action = utils.id_to_action(action, max_speed=0.1)
+        else:
+            state_history.append(state)
+            action = np.array([0])
+            action = utils.id_to_action(action, max_speed=0.1)
+
 
         
         # TODO: get the action from your agent! You need to transform the discretized actions to continuous
@@ -68,9 +83,11 @@ if __name__ == "__main__":
     
     n_test_episodes = 15                  # number of episodes to test
 
+    history_length = 3
+
     # TODO: load agent
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    agent = BCAgent(device, lr=10e-4)
+    agent = BCAgent(history_length, device, lr=5*10e-4)
     agent.load("models/agent.pt")
 
     env = gym.make('CarRacing-v0').unwrapped

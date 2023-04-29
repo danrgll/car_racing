@@ -22,30 +22,31 @@ def accuracy(logits, labels):
     return torch.sum(preds == labels) / len(labels)
 
 
-def eval_fn(agent, X_valid, y_valid, n_batches, batchsize, device):
+def eval_fn(agent, X_batches_valid, y_batches_valid, n_batches, device, history_length):
     """
     Evaluation method
     """
     score = AverageMeter()
     losses = AverageMeter()
-    agent.eval()
+    agent.net.eval()
 
-    # transform input to tensors (batch)
-    X_tensor = torch.from_numpy(X_valid)
-    X_tensor = X_tensor.to(device)
-    y_tensor = torch.from_numpy(y_valid)
-    y_tensor = y_tensor.to(device)
-    # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
-    X_tensor = X_tensor.view((X_tensor.size(0), 1, 96, 96))
     with torch.no_grad():  # no gradient needed
+        for i in range(n_batches):
+            X_batch = X_batches_valid[i]
+            y_batch = y_batches_valid[i]
 
-            images = X_tensor.to(device)
-            labels = y_tensor.to(device)
+            # transform data to tensors (batch)
+            images = torch.from_numpy(X_batch)
+            images = images.to(device)
+            labels = torch.from_numpy(y_batch)
+            labels = labels.to(device)
+            # reshape tensor from (batchsize, hight, width) to (batchsize, 1, hight, width)
+            images = images.view((images.size(0), history_length, 96, 96))
 
             outputs, pred = agent.predict(images, get_loss=True)
             loss = agent.criterion(pred, labels)
             losses.update(loss.item(), images.size(0))
-            acc = accuracy(outputs, labels)
+            acc = accuracy(pred, labels)
             score.update(acc.item(), images.size(0))
 
     return score.avg, losses.avg
